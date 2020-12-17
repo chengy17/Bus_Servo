@@ -177,7 +177,7 @@ namespace BusServo {
 
     /**
      * 
-     * @param enable 
+     * @param enable on or off Torque
      */
     //% blockId=BusServo_enableTorque block="enableTorque %enable"
     //% weight=48
@@ -208,9 +208,9 @@ namespace BusServo {
 
     /**
      * 
-     * @param id 
+     * @param id ID number
      * @param value (96~4000)
-     * @param time 
+     * @param time movement time
      */
     //% blockId=BusServo_controlServo block="controlServo %id|value %value||time %time"
     //% weight=47

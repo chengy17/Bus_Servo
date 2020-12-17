@@ -10,6 +10,7 @@
         "README.md",
         "main.blocks",
         "main.ts",
+        "_locales/de/BusServo-strings.json",
         "_locales/zh-cn/BusServo-strings.json",
         "_locales/zh-cn/BusServo-jsdoc-strings.json",
         "_locales/zh-tw/BusServo-strings.json",
