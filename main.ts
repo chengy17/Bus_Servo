@@ -1,5 +1,12 @@
+/*
+Copyright (C): 2020, Shenzhen Yahboom Tech
+Edited By gengyue
 
-namespace Bus_Servo {
+"busServo": "file:main.ts"
+*/
+
+//% color="#1E90FF" weight=26 icon="\uf021"
+namespace BusServo {
 
     let Rx_Data: Buffer = pins.createBuffer(8)
     let Rx_index: number = 0
@@ -90,25 +97,24 @@ namespace Bus_Servo {
         return value
     }
 
-
-    //% blockId=bus_servo_controlServo block="controlServo %id|value %value|time %time"
-    //% weight=30
-    //% time.defl=1000
+    /**
+     * 
+     * @param id ID number
+     */
+    //% blockId=BusServo_setID block="setID %id"
+    //% weight=50
     //% id.defl=1
-    //% id.max=254
+    //% id.max=250
     //% id.min=1
-    export function controlServo(id: number, value: number, time: number) {
+    export function setID(id: number) {
 
-        let temp_buf: Buffer = pins.createBuffer(11)
-        let s_id = id & 0xFF
-        let len = 0x07
+        let temp_buf: Buffer = pins.createBuffer(8)
+        let s_id = 0xFE
+        let len = 0x04
         let cmd = 0x03
-        let addr = 0x2A
-        let pos_H = (value >> 8) & 0xFF
-        let pos_L = value & 0xFF
-        let time_H = (time >> 8) & 0xFF
-        let time_L = time & 0xFF
-        let checknum = (~(s_id + len + cmd + addr + pos_H + pos_L + time_H + time_L)) & 0xFF
+        let addr = 0x05
+        let set_id = id & 0xFF
+        let checknum = (~(s_id + len + cmd + addr + set_id)) & 0xFF
 
         temp_buf.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
         temp_buf.setNumber(NumberFormat.UInt8LE, 1, 0xFF)
@@ -116,17 +122,18 @@ namespace Bus_Servo {
         temp_buf.setNumber(NumberFormat.UInt8LE, 3, len)
         temp_buf.setNumber(NumberFormat.UInt8LE, 4, cmd)
         temp_buf.setNumber(NumberFormat.UInt8LE, 5, addr)
-        temp_buf.setNumber(NumberFormat.UInt8LE, 6, pos_H)
-        temp_buf.setNumber(NumberFormat.UInt8LE, 7, pos_L)
-        temp_buf.setNumber(NumberFormat.UInt8LE, 8, time_H)
-        temp_buf.setNumber(NumberFormat.UInt8LE, 9, time_L)
-        temp_buf.setNumber(NumberFormat.UInt8LE, 10, checknum)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 6, set_id)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 7, checknum)
 
         sendCmdToSerial(temp_buf)
     }
 
-    //% blockId=bus_servo_readValue block="readValue %id"
-    //% weight=31
+    /**
+     * 
+     * @param id ID number
+     */
+    //% blockId=BusServo_readValue block="readValue %id"
+    //% weight=49
     //% id.defl=1
     //% id.max=254
     //% id.min=1
@@ -156,7 +163,7 @@ namespace Bus_Servo {
         temp_buf.setNumber(NumberFormat.UInt8LE, 7, checknum)
         sendCmdToSerial(temp_buf)
 
-        control.waitMicros(2)
+        control.waitMicros(5)
         if (RecvFlag) {
             RecvFlag = 0
             value = bus_servo_get_value()
@@ -166,5 +173,105 @@ namespace Bus_Servo {
         }
 
         return value
+    }
+
+    /**
+     * 
+     * @param enable 
+     */
+    //% blockId=BusServo_enableTorque block="enableTorque %enable"
+    //% weight=48
+    //% enable.defl=true
+    export function enableTorque(enable: boolean) {
+        let on_off: number = 0x00
+        if (enable) {
+            on_off = 0x01
+        }
+        let temp_buf: Buffer = pins.createBuffer(8)
+        let s_id = 0xFE
+        let len = 0x04
+        let cmd = 0x03
+        let addr = 0x28
+        let checknum = (~(s_id + len + cmd + addr + on_off)) & 0xFF
+
+
+        temp_buf.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 1, 0xFF)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 2, s_id)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 3, len)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 4, cmd)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 5, addr)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 6, on_off)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 7, checknum)
+        sendCmdToSerial(temp_buf)
+    }
+
+    /**
+     * 
+     * @param id 
+     * @param value (96~4000)
+     * @param time 
+     */
+    //% blockId=BusServo_controlServo block="controlServo %id|value %value||time %time"
+    //% weight=47
+    //% time.defl=1000
+    //% id.defl=1 id.max=254 id.min=1
+    //% value.defl=2000 value.max=4000 value.min=96
+    export function controlServo(id: number, value: number, time: number = 1000) {
+
+        let temp_buf: Buffer = pins.createBuffer(11)
+        let s_id = id & 0xFF
+        let len = 0x07
+        let cmd = 0x03
+        let addr = 0x2A
+        let pos_H = (value >> 8) & 0xFF
+        let pos_L = value & 0xFF
+        let time_H = (time >> 8) & 0xFF
+        let time_L = time & 0xFF
+        let checknum = (~(s_id + len + cmd + addr + pos_H + pos_L + time_H + time_L)) & 0xFF
+
+        temp_buf.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 1, 0xFF)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 2, s_id)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 3, len)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 4, cmd)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 5, addr)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 6, pos_H)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 7, pos_L)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 8, time_H)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 9, time_L)
+        temp_buf.setNumber(NumberFormat.UInt8LE, 10, checknum)
+
+        sendCmdToSerial(temp_buf)
+    }
+
+
+    /**
+     * 
+     * @param command unsigned char arrays
+     */
+    //% blockId=BusServo_writeCommand block="writeCommand %command"
+    //% weight=47
+    //% command.defl=[0xFF, 0xFF, 0xFE, 0x07, 0x03, 0x2A, 0x07, 0xD0, 0x03, 0xE8, 0x0B]
+    //% advanced=true
+    export function writeCommand(command: number[]) {
+
+        if (command[0] == 0xFF && command[1] == 0xFF) {
+            let checknum: number = 0;
+            let temp_buf: Buffer = pins.createBuffer(command.length)
+            temp_buf.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
+            temp_buf.setNumber(NumberFormat.UInt8LE, 1, 0xFF)
+            for (let index = 2; index < command.length - 1; index++) {
+                temp_buf.setNumber(NumberFormat.UInt8LE, index, command[index])
+
+                checknum = checknum + command[index]
+            }
+            checknum = (~checknum) & 0xFF
+            temp_buf.setNumber(NumberFormat.UInt8LE, command.length - 1, checknum)
+
+            if (checknum == command[command.length - 1]) {
+                sendCmdToSerial(temp_buf)
+            }
+        }
     }
 }

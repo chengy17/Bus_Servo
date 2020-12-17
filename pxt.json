@@ -1,6 +1,6 @@
 {
-    "name": "Bus_Servo",
-    "version": "0.0.0",
+    "name": "BusServo",
+    "version": "0.0.1",
     "description": "",
     "dependencies": {
         "core": "*",
@@ -9,7 +9,11 @@
     "files": [
         "README.md",
         "main.blocks",
-        "main.ts"
+        "main.ts",
+        "_locales/zh-cn/BusServo-strings.json",
+        "_locales/zh-cn/BusServo-jsdoc-strings.json",
+        "_locales/zh-tw/BusServo-strings.json",
+        "_locales/zh-tw/BusServo-jsdoc-strings.json"
     ],
     "testFiles": [
         "test.ts"
