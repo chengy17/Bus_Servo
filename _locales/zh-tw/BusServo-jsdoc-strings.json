@@ -1,7 +1,7 @@
 {
     
     "BusServo.setID": "設置總線舵機的ID號（1~250）",
-    "BusServo.readValue": "讀取總線舵機的位置（96~4000），失敗返回0",
+    "BusServo.readValue": "讀取總線舵機的位置（96~4000），失敗返回負數",
     "BusServo.enableTorque": "扭矩開關，默認開，關閉扭矩後無法控制",
     "BusServo.controlServo": "控制總線舵機運動到對應的位置",
     "BusServo.writeCommand": "寫命令，可以按照協議內容發送命令控制舵機"

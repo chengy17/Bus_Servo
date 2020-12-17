@@ -20,31 +20,26 @@ namespace BusServo {
     }
 
     function readSerial() {
-        let responseBuffer: Buffer = pins.createBuffer(8);
         let readBuf: Buffer
         let Rx_Temp: number = 0
-
+        let now = control.millis()
         while (true) {
+
             readBuf = serial.readBuffer(1);
             Rx_Temp = readBuf.getNumber(NumberFormat.UInt8LE, 0)
-            switch(Rx_Flag)
-            {
-            case 0:
-                if(Rx_Temp == 0xFF)
-                {
+            if (Rx_Flag == 0) {
+                if (Rx_Temp == 0xFF) {
                     Rx_Data.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
                     Rx_Flag = 1
                 }
-                else if (Rx_Temp == 0xF5)
-                {
+                else if (Rx_Temp == 0xF5) {
                     Rx_Data.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
                     Rx_Data.setNumber(NumberFormat.UInt8LE, 1, 0xF5)
                     Rx_Flag = 2
                     Rx_index = 2
                 }
-                break
-
-            case 1:
+            }
+            else if (Rx_Flag == 1) {
                 if(Rx_Temp == 0xF5)
                 {
                     Rx_Data.setNumber(NumberFormat.UInt8LE, 1, 0xF5)
@@ -55,25 +50,29 @@ namespace BusServo {
                     Rx_Flag = 0
                     Rx_Data.setNumber(NumberFormat.UInt8LE, 0, 0x00)
                 }
-                break
 
-            case 2:
+            }
+            else if (Rx_Flag == 2) {
                 Rx_Data[Rx_index] = Rx_Temp;
                 Rx_Data.setNumber(NumberFormat.UInt8LE, Rx_index, Rx_Temp)
                 Rx_index++
-
+    
                 if(Rx_index >= 8)
                 {
                     Rx_Flag = 0
                     Rx_Temp = 0
                     RecvFlag = 1
                 }
-                break
-
-            default:
-                break
             }
+            
+            // if (RecvFlag == 1) {
+            //     return
+            // }
+            // if (control.millis() - now < 2) {
+            //     return
+            // }
         }
+        return
     }
 
     function bus_servo_get_value(): number {
@@ -84,16 +83,12 @@ namespace BusServo {
         let value_H = Rx_Data.getNumber(NumberFormat.UInt8LE, 5)
         let value_L = Rx_Data.getNumber(NumberFormat.UInt8LE, 6)
         let check = Rx_Data.getNumber(NumberFormat.UInt8LE, 7)
-        let value = 0
+        let value = -2
 
         let checknum = (~(s_id + len + state + value_H + value_L)) & 0xFF;
         if(checknum == check) {
             value = (value_H << 8) + value_L;
         }
-        for (let i: number = 0; i < 8; i++) {
-            Rx_Data.setNumber(NumberFormat.UInt8LE, i, 0)
-        }
-
         return value
     }
 
@@ -129,7 +124,7 @@ namespace BusServo {
     }
 
     /**
-     * 
+     * error return -1
      * @param id ID number
      */
     //% blockId=BusServo_readValue block="readValue %id"
@@ -138,12 +133,16 @@ namespace BusServo {
     //% id.max=254
     //% id.min=1
     export function readValue(id: number): number {
-
+        RecvFlag = 0
+        for (let i: number = 0; i < 8; i++) {
+            Rx_Data.setNumber(NumberFormat.UInt8LE, i, 0)
+        }
+        
         if (!Read_Servo_Service) {
             Read_Servo_Service = 1
             control.inBackground(readSerial)
         }
-
+        // control.inBackground(readSerial)
         let temp_buf: Buffer = pins.createBuffer(8)
         let s_id = id & 0xFF
         let len = 0x04
@@ -151,7 +150,7 @@ namespace BusServo {
         let param_H = 0x38
         let param_L = 0x02
         let checknum = (~(s_id + len + cmd + param_H + param_L)) & 0xFF
-        let value: number = 0
+        let value: number = -1
 
         temp_buf.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
         temp_buf.setNumber(NumberFormat.UInt8LE, 1, 0xFF)
@@ -163,15 +162,15 @@ namespace BusServo {
         temp_buf.setNumber(NumberFormat.UInt8LE, 7, checknum)
         sendCmdToSerial(temp_buf)
 
-        control.waitMicros(5)
+        // control.waitMicros(5)
+        basic.pause(2)
         if (RecvFlag) {
-            RecvFlag = 0
             value = bus_servo_get_value()
+            RecvFlag = 0
         }
         else {
-            value = 0 
+            value = -1
         }
-
         return value
     }
 
