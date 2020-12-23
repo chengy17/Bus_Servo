@@ -1,7 +1,8 @@
 {
     "name": "BusServo",
     "version": "0.0.2",
-    "description": "",
+    "description": "Yahboom BusServo",
+    "license": "MIT",
     "dependencies": {
         "core": "*",
         "microphone": "*"
