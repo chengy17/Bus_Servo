@@ -65,12 +65,12 @@ namespace BusServo {
                 }
             }
             
-            // if (RecvFlag == 1) {
-            //     return
-            // }
-            // if (control.millis() - now < 2) {
-            //     return
-            // }
+            if (RecvFlag == 1) {
+                return
+            }
+            else if (control.millis() - now > 2) {
+                return
+            }
         }
         return
     }
@@ -137,12 +137,12 @@ namespace BusServo {
         for (let i: number = 0; i < 8; i++) {
             Rx_Data.setNumber(NumberFormat.UInt8LE, i, 0)
         }
-        
-        if (!Read_Servo_Service) {
-            Read_Servo_Service = 1
-            control.inBackground(readSerial)
-        }
-        // control.inBackground(readSerial)
+
+        // if (!Read_Servo_Service) {
+        //     Read_Servo_Service = 1
+        //     control.inBackground(readSerial)
+        // }
+        control.inBackground(readSerial)
         let temp_buf: Buffer = pins.createBuffer(8)
         let s_id = id & 0xFF
         let len = 0x04
@@ -162,14 +162,10 @@ namespace BusServo {
         temp_buf.setNumber(NumberFormat.UInt8LE, 7, checknum)
         sendCmdToSerial(temp_buf)
 
-        // control.waitMicros(5)
         basic.pause(2)
         if (RecvFlag) {
             value = bus_servo_get_value()
             RecvFlag = 0
-        }
-        else {
-            value = -1
         }
         return value
     }
