@@ -1,9 +1,0 @@
-{
-
-    "BusServo.setID|block": "设置ID|%id",
-    "BusServo.readValue|block": "读取位置 |ID%id",
-    "BusServo.enableTorque|block": "扭矩开关|%enable",
-    "BusServo.controlServo|block": "控制舵机 |ID %id|位置 %value||时间 %time",
-    "BusServo.writeCommand|block": "写命令|数据 %command"
-
-}

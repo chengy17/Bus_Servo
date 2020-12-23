@@ -1,9 +1,0 @@
-{
-
-    "BusServo.setID|block": "setID|%id",
-    "BusServo.readValue|block": "readValue |ID%id",
-    "BusServo.enableTorque|block": "enableTorque|%enable",
-    "BusServo.controlServo|block": "controlServo |ID %id|value %value||time %time",
-    "BusServo.writeCommand|block": "writeCommand|%command"
-
-}
