@@ -1,16 +1,19 @@
 {
-    "name": "Bus_Servo",
-    "version": "0.0.0",
-    "description": "Yahboom Bus_Servo",
+    "name": "BusServo",
+    "version": "0.0.1",
+    "description": "",
     "dependencies": {
-        "core": "*",
-        "radio": "*",
-        "microphone": "*"
+        "core": "*"
     },
     "files": [
         "README.md",
         "main.blocks",
-        "main.ts"
+        "main.ts",
+        "_locales/de/BusServo-strings.json",
+        "_locales/zh-cn/BusServo-strings.json",
+        "_locales/zh-cn/BusServo-jsdoc-strings.json",
+        "_locales/zh-tw/BusServo-strings.json",
+        "_locales/zh-tw/BusServo-jsdoc-strings.json"
     ],
     "testFiles": [
         "test.ts"
@@ -19,6 +22,5 @@
     "supportedTargets": [
         "microbit"
     ],
-    "preferredEditor": "blocksprj",
-    "license": "MIT"
+    "preferredEditor": "blocksprj"
 }
